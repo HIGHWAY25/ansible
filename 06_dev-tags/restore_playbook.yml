@@ -1,0 +1,19 @@
+---
+- name: Restore playbook.yml 
+  hosts: all
+  tasks:
+    # 1) postfix 서비스 종료
+    # 2) postfix,dovecot 패키지 삭제
+    - name: postfix 서비스 종료
+      service:
+        name: postfix
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+    
+    - name: postfix,dovecot 패키지 삭제
+      yum:
+        name:
+        - postfix
+        - dovecot 
+        state: absent

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ansible-doc $1 | sed -n '/EXAMPLES/,$p' | more

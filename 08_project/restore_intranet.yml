@@ -1,0 +1,41 @@
+---
+- name: Restore the intranet.yml
+  hosts: all
+  tasks: 
+    # 1) Close the port with firewalld module - http, https
+    # 2) Stop the service with service module - httpd, firewalld
+    # 3) Remove the file - /var/www/html/index.html
+    # 4) Remove the packages - httpd, mod_ssl, firewalld 
+    - name: 방화벽 포트 닫기
+      firewalld:
+        service: "{{ item  }}"
+        permanent: no
+        immediate: no
+        state: disabled
+      loop:
+        - http
+        - https
+
+    - name: 서비스 내리기
+      service: 
+        name: "{{ item  }}"
+        state: stopped
+        enabled: no
+      loop:
+        - httpd
+        - firewalld
+
+    - name: 파일 지우기
+      file:
+        path: /var/www/html/index/html
+        state: absent
+
+    - name: 패키지 지우기
+      yum:
+        name:
+        - httpd
+        - mod_ssl
+        - firewalld
+        state: absent
+      ignore_errors: true
+      

@@ -1,0 +1,19 @@
+---
+  - name: Install the firewall
+    yum:
+      name: "{{ pkg_fw }}"
+      state: latest
+
+  - name: 서비스 기동 - {{svc_fw}}
+    service:
+      name: "{{ svc_fw }}" 
+      state: started
+      enabled: true
+
+  - name: 방화벽 서비스 등록 - {{ fw_webs }}
+    firewalld:
+      service: "{{ item }}" 
+      permanent: yes
+      state: enabled
+      immediate: yes
+    with_items: "{{ fw_webs }}"

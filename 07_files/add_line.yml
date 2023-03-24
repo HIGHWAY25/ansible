@@ -1,0 +1,9 @@
+---
+- name: lifeinfile moudle
+  hosts: all
+  tasks: 
+    - name: Add a single line of text file
+      lineinfile:
+        path: /home/devops/users.txt
+        line: 2nd line.
+        state: present

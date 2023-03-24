@@ -1,0 +1,35 @@
+---
+- name: Restore playbook.yml
+  hosts: webserver
+  vars_files: vars/vars.yml
+
+  tasks:
+    - name: 1) 방화벽 포트 닫기
+      firewalld:
+        service: "{{ item }}"
+        permanent: no
+        immediate: no 
+        state: disabled
+      loop:
+        - http
+        - https
+    - name: 2) 서비스 삭제
+      service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
+      loop:
+        - "{{svc_fw}}"
+        - "{{svc_web}}"
+    - name: 3) 서비스 disable
+      file:
+        path: /var/www/html/index.html
+        state: absent
+    - name: 4) 패키지 삭제
+      yum:
+        name:
+          - "{{pkg_http}}"
+          - "{{pkg_https}}"
+          - "{{pkg_python}}"
+          - "{{pkg_fw}}"
+        state: absent

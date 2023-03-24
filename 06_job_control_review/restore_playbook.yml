@@ -1,0 +1,35 @@
+--- 
+- name: Restore playbook.yml 
+  hosts: all
+  gather_facts: no
+  vars_files:
+    - vars.yml
+  tasks: 
+    - name: 방화벽 해제
+      firewalld:
+        service: "{{ item }}"
+        permanent: no 
+        immediate: no
+        state: disabled
+      with_items: "{{ fw_svcs }}"
+
+    - name: index 파일 삭제
+      file: 
+        path: 
+        - "{{ index_src }}"
+        - "{{ index_dest }}"
+        state: absent
+
+    - name: 서비스 disable
+      service:
+        name: "{{ services }}"
+        state: stopped
+        enabled: no
+    
+    - name: 패키지 삭제
+      yum:
+        name: "{{ packages }}"
+        state: absent
+    
+
+

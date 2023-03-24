@@ -1,0 +1,9 @@
+---
+- name: 파일 모으기 - /var/log/secure
+  hosts: all
+  tasks:  
+    - name: fetch moudle
+      fetch: 
+        src: /var/log/secure
+        dest: secure-backups/{{ inventory_hostname }}-
+        flat: yes

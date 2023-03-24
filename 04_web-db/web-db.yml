@@ -1,0 +1,57 @@
+---
+- name: WEB-DB service
+  hosts: web1
+  tasks:
+    # 1) Install packages - Web(httpd, php, php-mysqlnd, php-pdo), db(mariadb-server), firewall(firewalld)
+    # 2) Configure the web service - /var/www/html/index.php
+    # 3) Enable the services - firewall, web, db
+    # 4) Open the service - http, https
+    - name: Install packages 
+      yum:
+        name:
+          - httpd
+          - php
+          - php-mysqlnd
+          - php-pdo
+          - mariadb-server
+          - firewalld
+        state: present
+
+    - name: Configure the web service 
+      get_url:
+        url: http://192.168.10.10/index.php
+        dest:  /var/www/html/index.php
+
+    - name: Enable the services
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - firewalld
+        - httpd
+        - mariadb
+
+    - name: Open the service
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        state: enabled
+        immediate: yes     
+      loop:
+        - http
+        - https
+
+- name: Test webserver
+  hosts: localhost
+  tasks: 
+    - name: Connect to webserver
+      uri:
+        url: http://web1.example.com
+        return_content: yes
+        status_code: 200
+
+
+
+
+

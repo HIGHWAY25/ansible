@@ -1,0 +1,16 @@
+---
+- name: Restore palybook.yml
+  hosts: all
+  tasks:
+    - name: mariadb 서비스 disable
+      service:
+        name: mariadb
+        state: stopped
+        enabled: no
+    
+    - name: mariadb_service 패키지 삭제
+      yum:
+        name:
+          - mariadb-server
+          - python3-PyMySQL
+        state: absent

@@ -1,0 +1,42 @@
+---
+- name: 
+  hosts: all
+  vars_files:
+    - vars/vars.yml
+  tasks:
+    # 1) 방화벽 종료 - http https
+    # 2) 웹 서비스 설정 파일 삭제 (디렉토리, index.html)
+    # 3) 서비스 종료 - firewalld, httpd
+    # 4) 패키지 삭제 -firewalld, httpd, mod_ssl
+    - name: 1) 방화벽 종료 - http https
+      firewalld:
+        service: "{{ item }}"
+        permanent: no
+        immediate: no
+        state: disabled
+      with_items:
+        - "{{ fw_http }}"
+        - "{{ fw_https }}"
+    - name: 2) 웹 서비스 설정 파일 삭제 (디렉토리, index.html)
+      file:
+        path: "{{ secrets_dir }}"
+        state: absent
+    - name: 3) 서비스 종료 - firewalld, httpd
+      service:
+        name: "{{ item }}"
+        state: stopped
+      with_items:
+        - "{{ svc_fw }}"
+        - "{{ svc_web }}"
+    - name: 4) 패키지 삭제 -firewalld, httpd, mod_ssl
+      yum:
+        name: 
+          - "{{ pkg_fw }}"
+          - "{{ pkg_http }}"
+          - "{{ pkg_https }}"
+        state: absent  
+
+
+
+
+

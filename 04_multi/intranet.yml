@@ -1,0 +1,44 @@
+- name: 1st play 
+  hosts: web1
+  tasks:
+    - name: Install the package 
+      yum:
+        name: 
+        - httpd
+        - mod_ssl
+        - firewalld
+        state: latest
+
+    - name: Configure webservice 
+      copy: 
+        content: "Welcome to My Server\n"
+        dest: /var/www/html/index.html
+
+    - name: Start the Service - httpd, firewalld
+      service:
+        name: "{{ item  }}"
+        enabled: yes
+        state: started
+      loop:
+       - httpd
+       - firewalld
+       
+    - name: Open the firewall port with http, https
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      loop:
+      - http
+      - https
+
+- name: 2st play
+  hosts: localhost
+  tasks:
+    - name: Test the Web page
+      uri: 
+       url: http://web1.example.com
+       return_content: yes
+       status_code: 200
+      
